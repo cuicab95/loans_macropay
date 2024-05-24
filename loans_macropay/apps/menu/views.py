@@ -28,5 +28,7 @@ class MenuViewSet(
             serializer = self.get_serializer(data=menu_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        return Response({}, status=status.HTTP_201_CREATED)
+        queryset = self.filter_queryset(self.get_queryset())
+        data = self.service.build_menu_tree(queryset)
+        return Response(data, status=status.HTTP_201_CREATED)
 

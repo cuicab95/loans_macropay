@@ -23,7 +23,7 @@
 #### Crear usuario admin (nos servirá para entrar al panel administrativo y documentación api)
 - ```docker-compose run web python manage.py createsuperuser```
 
-#### Poblar con datos dummy
+#### Poblar con datos dummy (cliente, cuentas, préstamos ...)
 - ```docker-compose run web python manage.py runscript loans_macropay.apps.customer.scripts```
 
 #### Levantar el proyecto:
