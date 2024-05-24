@@ -27,4 +27,5 @@ urlpatterns = [
     path('security/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/doc/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('customer/', include('loans_macropay.apps.customer.urls')),
+    path('menu/', include('loans_macropay.apps.menu.urls')),
 ]

@@ -43,7 +43,8 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 MY_APPS = [
-    'loans_macropay.apps.customer'
+    'loans_macropay.apps.customer',
+    'loans_macropay.apps.menu',
 ]
 EXTERNAL_APPS = [
     'rest_framework',
