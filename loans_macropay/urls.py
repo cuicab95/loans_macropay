@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -26,4 +26,5 @@ urlpatterns = [
     path('security/api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('security/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/doc/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('customer/', include('loans_macropay.apps.customer.urls')),
 ]

@@ -4,3 +4,4 @@ djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
 mysqlclient==2.2.4
 django-environ
+django-extensions
