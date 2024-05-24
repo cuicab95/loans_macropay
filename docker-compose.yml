@@ -16,6 +16,8 @@ services:
           interval: 10s
           timeout: 5s
           retries: 5
+        volumes:
+          - ./initdb:/docker-entrypoint-initdb.d
     web:
         build:
           context: .

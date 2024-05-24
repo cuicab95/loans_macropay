@@ -1,5 +1,6 @@
 from loans_macropay.config.tests import ConfigAPITest
 from rest_framework import status
+import json
 
 
 class MenuTestCase(ConfigAPITest):
@@ -101,7 +102,7 @@ class MenuTestCase(ConfigAPITest):
                 "type_menu": "basic"
             }
         ]
-        response = self.client.post(f"{self.path}", data=data_menu)
+        response = self.client.post(f"{self.path}", data=json.dumps(data_menu), content_type='application/json')
         data_response = [
             {
                 "title": "Configuración",
@@ -167,4 +168,74 @@ class MenuTestCase(ConfigAPITest):
             }
         ]
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response, data_response)
+        self.assertEqual(response.data, data_response)
+
+    def test_list_menu(self):
+        self.test_create_menu()
+        response = self.client.get(f"{self.path}")
+        data_response = [
+            {
+                "title": "Configuración",
+                "type": "group",
+                "children": [
+                    {
+                        "title": "Administración",
+                        "type": "collapsable",
+                        "icon": "heroicons_solid:book-open",
+                        "children": [
+                            {
+                                "id": 12,
+                                "title": "Usuarios1",
+                                "type": "basic",
+                                "icon": "heroicons_outline:users",
+                                "link": "/ruta1"
+                            },
+                            {
+                                "id": 13,
+                                "title": "claves",
+                                "type": "basic",
+                                "icon": "heroicons_outline:key",
+                                "link": "/ruta2/"
+                            },
+                            {
+                                "id": 14,
+                                "title": "Cuentas",
+                                "type": "basic",
+                                "icon": "heroicons_outline:banknotes",
+                                "link": "/ruta3"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Permisos",
+                        "type": "collapsable",
+                        "icon": "heroicons_outline:lock-closed",
+                        "children": [
+                            {
+                                "id": 16,
+                                "title": "Usuarios",
+                                "type": "basic",
+                                "icon": "heroicons_outline:user-circle",
+                                "link": "/ruta4"
+                            },
+                            {
+                                "id": 17,
+                                "title": "Permisos",
+                                "type": "basic",
+                                "icon": "heroicons_outline:lock-closed",
+                                "link": "/ruta5"
+                            },
+                            {
+                                "id": 31,
+                                "title": "Meny por Permisos",
+                                "type": "basic",
+                                "icon": "heroicons_outline:globe-alt",
+                                "link": "/ruta6"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, data_response)
