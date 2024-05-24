@@ -1,0 +1,61 @@
+DELIMITER //
+CREATE PROCEDURE sp_process_payments(
+    IN loan_current_date DATE, 
+    IN interest_rate FLOAT, 
+    IN commercial_year_days INT
+)
+ BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE loan_id_temp INT;
+    DECLARE customer_id_temp VARCHAR(100);
+    DECLARE loan_amount_temp DECIMAL(10,2);
+    DECLARE loan_branch_office_id_temp INT;
+    DECLARE account_total_amount_temp DECIMAL(10,2);
+    DECLARE loan_date_temp DATE;
+    
+    DECLARE plazo INT;
+    DECLARE interest DECIMAL(10,2);
+    DECLARE iva DECIMAL(10,2);
+    DECLARE total_payment DECIMAL(10,2);
+    DECLARE account_total_amount DECIMAL(10,2);
+    DECLARE full_name_temp VARCHAR(300);
+    
+    
+	DECLARE cursor_loans CURSOR FOR 
+    SELECT loan.id, CONCAT(cus.first_name, ' ', cus.last_name) AS full_name, loan.customer_id, loan.amount, account.amount, loan.branch_office_id, loan.date_loan
+    FROM `customer_loans` as loan
+    INNER JOIN `customer_account` as account ON account.customer_id = loan.customer_id
+    INNER JOIN `customer_customer` as cus ON cus.id = loan.customer_id
+    WHERE account.status ='ACT' AND loan.status ='PEND'
+    ORDER BY loan.date_loan ASC;
+    
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN cursor_loans;
+    read_loop: LOOP
+    	FETCH cursor_loans INTO loan_id_temp, full_name_temp, customer_id_temp, loan_amount_temp, account_total_amount_temp, loan_branch_office_id_temp, loan_date_temp;
+        IF done THEN
+        	LEAVE read_loop;
+        END IF;
+        SET account_total_amount = (SELECT acc.amount from `customer_account` as acc WHERE acc.customer_id = customer_id_temp);
+        SET plazo = DATEDIFF(loan_current_date, loan_date_temp);
+        SET interest = (loan_amount_temp * plazo * interest_rate) / commercial_year_days;
+        SET iva = interest * (SELECT branch.iva FROM `customer_branchoffice` as branch where id=loan_branch_office_id_temp);
+        SET total_payment = loan_amount_temp + interest + iva;
+        IF total_payment <= account_total_amount THEN
+        	SET account_total_amount = account_total_amount - total_payment;
+        	UPDATE customer_loans
+            SET status = 'PAID'
+            WHERE id=loan_id_temp;
+            
+            UPDATE customer_account
+            SET amount = account_total_amount
+            WHERE customer_id = customer_id_temp;
+            
+            SELECT loan_id_temp,full_name_temp,customer_id_temp,plazo, loan_amount_temp, interest, iva, total_payment, account_total_amount;
+          
+         END IF;
+    END LOOP read_loop;
+    CLOSE cursor_loans;
+ END;
+ // DELIMITER ;

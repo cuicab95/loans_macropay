@@ -5,7 +5,7 @@
 - Python 3.11
 - Django 5.0.4
 
-#### En la ráiz del proyecto, crear un archivo un .env y agregar lo siguiente:
+#### En la ráiz del proyecto, crear un archivo un .env y modificar los datos (se puede dejar así):
 ```
     MYSQL_ROOT_PASSWORD=root_pass_mysql
     MYSQL_DATABASE=loans
@@ -29,6 +29,8 @@
 #### Levantar el proyecto:
 - ```docker-compose up```
 
+#### Para ejecutar el script del SP, entras a la BD y ejecutas el script llamado "SP_Loans" (se encuentra en la raíz del proyecto)
+- ```http://localhost:8080/```
 
 #### Documentación api
 - ```http://localhost:8000/api/doc/```
